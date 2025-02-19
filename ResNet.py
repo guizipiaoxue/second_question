@@ -33,8 +33,8 @@ class Residual(nn.Module):
         return F.relu(Y)
 
 b1 = nn.Sequential(
-    nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3, stride=1, padding=1),
-    nn.BatchNorm2d(16), nn.ReLU(),
+    nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, stride=1, padding=1),
+    nn.BatchNorm2d(64), nn.ReLU(),
     nn.MaxPool2d(kernel_size=2, stride=2)
 )
 
@@ -48,18 +48,18 @@ def resnet_block(input_channels, out_channels, num_residual, first_block=False):
             blk.append(Residual(in_channels=out_channels, out_channels=out_channels))
     return blk
 
-b2 = nn.Sequential(*resnet_block(input_channels=16, out_channels=16, num_residual=2, first_block=True))
-b3 = nn.Sequential(*resnet_block(input_channels=16, out_channels=32, num_residual=2))
-b4 = nn.Sequential(*resnet_block(input_channels=32, out_channels=32, num_residual=2))
-b5 = nn.Sequential(*resnet_block(input_channels=32, out_channels=64, num_residual=2))
-b6 = nn.Sequential(*resnet_block(input_channels=64, out_channels=64, num_residual=2))
-b7 = nn.Sequential(*resnet_block(input_channels=64, out_channels=128, num_residual=2))
-b8 = nn.Sequential(*resnet_block(input_channels=128, out_channels=256, num_residual=2))
+b2 = nn.Sequential(*resnet_block(input_channels=64, out_channels=64, num_residual=2, first_block=True))
+b3 = nn.Sequential(*resnet_block(input_channels=64, out_channels=128, num_residual=2))
+b4 = nn.Sequential(*resnet_block(input_channels=128, out_channels=128, num_residual=2))
+b5 = nn.Sequential(*resnet_block(input_channels=128, out_channels=256, num_residual=2))
+b6 = nn.Sequential(*resnet_block(input_channels=256, out_channels=256, num_residual=2))
+b7 = nn.Sequential(*resnet_block(input_channels=256, out_channels=512, num_residual=2))
+b8 = nn.Sequential(*resnet_block(input_channels=512, out_channels=512, num_residual=2))
 
 net = nn.Sequential(b1, b2, b3, b4, b5, b6, b7, b8,
                     nn.AdaptiveAvgPool2d((1, 1)),
                     nn.Flatten(),
-                    nn.Linear(in_features= 256, out_features=10),
+                    nn.Linear(in_features= 512, out_features=10),
 )
 
 def train(net , train_iter, test_iter, num_epochs, lr, device = 'cuda:0'):
